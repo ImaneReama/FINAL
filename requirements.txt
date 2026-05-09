@@ -1,0 +1,9 @@
+Flask
+flask-cors
+flet
+flet-map
+pillow
+geopy
+bcrypt
+python-dotenv
+pyjwt
