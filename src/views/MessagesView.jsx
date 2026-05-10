@@ -3,8 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useApp } from '../contexts/AppContext.jsx';
 import { Search, MessageCircle, Send, Paperclip, Star, Trash2, Pin, Phone, ChevronRight } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
-import BackButton from '../components/BackButton';
+import Sidebar from '../components/Sidebar.jsx';
+import BackButton from '../components/BackButton.jsx';
 import { motion, AnimatePresence } from 'motion/react';
 import { allContacts } from '../utils/contactsData.js';
 
@@ -91,10 +91,10 @@ export default function MessagesView() {
           const data = await res.json();
           setThreadState(data.map(m => ({
             id: m.id,
-            fromMe: String(m.sender_id || m.user_id) === String(user.id),
-            text: m.message || m.content || '',
-            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            timestamp: new Date(m.created_at).getTime(),
+            fromMe: m.fromMe !== undefined ? m.fromMe : String(m.sender_id) === String(user.id),
+            text: m.text || m.content || m.message || '',
+            time: m.time || new Date(m.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: m.timestamp || new Date(m.created_at || Date.now()).getTime(),
             type: m.message_type || 'text'
           })));
           
@@ -220,6 +220,29 @@ export default function MessagesView() {
     setEditingId(null);
     setEditValue('');
   };
+
+  // Ajoute cette fonction dans MessagesView.jsx
+const sendPhotoMessage = async (receiverId, photoBase64) => {
+  const token = localStorage.getItem('wqaft_token') || localStorage.getItem('token');
+  try {
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        receiver_id: receiverId,
+        message: "[PHOTO]",
+        photo: photoBase64
+      })
+    });
+    return res.ok;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+};
 
   const handleDeleteMessage = (id) => {
     setThreadState(prev => prev.map(m => m.id === id ? { ...m, text: 'Message supprimé', deleted: true } : m));
@@ -421,7 +444,7 @@ export default function MessagesView() {
                               Authorization: `Bearer ${token}` 
                             },
                             body: JSON.stringify({
-                              receiver_id: selectedId,
+                              receiver_id: Number(selectedId) || selectedId,
                               message: content
                             })
                           });

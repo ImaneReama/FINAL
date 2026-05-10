@@ -28,3 +28,7 @@ class RequestModel:
             (data['client_id'], data['category'], data['description'], data.get('photo_path'), data.get('lat'), data.get('lng'), data.get('status', 'pending'))
         )
         return cursor.lastrowid
+    @staticmethod
+    def update_status(request_id, status):
+        db = DBManager()
+        db.execute('UPDATE demandes SET status = ? WHERE id = ?', (status, request_id))

@@ -79,13 +79,12 @@ export default function Sidebar({ role = 'automobiliste' }) {
 
         // Propositions
         if (currentRole === 'automobiliste') {
-          const resProp = await fetch('/api/offers/count', {
+          const res = await fetch('/api/offers/count', {
             headers: { Authorization: `Bearer ${token}` }
           });
-          if (resProp.ok) {
-            const data = await resProp.json();
-            setProposalsCount(data.count);
-          }
+          if (!res.ok) return;
+          const data = await res.json();
+          setProposalsCount(data.count);
         }
       } catch (err) {
         console.error("Erreur notifications:", err);
@@ -111,9 +110,9 @@ export default function Sidebar({ role = 'automobiliste' }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="relative flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-slate-900/40 text-white shadow-2xl backdrop-blur-2xl border border-white/5 transition-all hover:bg-[#F4D06F] hover:text-black group"
+          className="relative flex h-12 w-12 items-center justify-center rounded-[1rem] bg-slate-900/40 text-white shadow-2xl backdrop-blur-2xl border border-white/5 transition-all hover:bg-[#F4D06F] hover:text-black group"
         >
-          <Menu className="h-6 w-6 transition-transform group-hover:rotate-12" />
+          <Menu className="h-5 w-5 transition-transform group-hover:rotate-12" />
           
           <AnimatePresence>
             {totalNotifications > 0 && (

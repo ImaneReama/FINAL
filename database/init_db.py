@@ -62,7 +62,9 @@ def init_db():
         mecanicien_id INTEGER,
         price REAL,
         message TEXT,
-        status TEXT DEFAULT 'pending', -- 'pending', 'accepted', 'rejected'
+        status TEXT DEFAULT 'pending', -- 'pending', 'accepted', 'refused'
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        refused_at TIMESTAMP,
         FOREIGN KEY(demande_id) REFERENCES demandes(id),
         FOREIGN KEY(mecanicien_id) REFERENCES users(id)
     )
